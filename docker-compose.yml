@@ -1,0 +1,59 @@
+services:
+  # Database mysql
+  mysql:
+    image: mysql:8.0
+    container_name: mysql8
+    restart: unless-stopped
+    ports:
+      - "9998:3306"
+    environment:
+      MYSQL_DATABASE: dockerdb
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      dockernet1:
+        ipv4_address: 172.20.0.2
+
+  # Phpmyadmin browser for mysql database
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "9999:80"
+    environment:
+      UPLOAD_LIMIT: 9999M
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD:
+    depends_on:
+      - mysql
+    volumes:
+      - ./config.user.inc.php:/app/etc/phpmyadmin/config.user.inc.php
+    networks:
+      dockernet1:
+        ipv4_address: 172.20.0.3
+
+  # Mail testing like Mailtrap
+  mailpit:
+    image: "axllent/mailpit:latest"
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      dockernet1:
+        ipv4_address: 172.20.0.4
+
+volumes:
+  mysql_data:
+    name: dockerdata
+    driver: local
+
+networks:
+  dockernet1:
+    external: true
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
