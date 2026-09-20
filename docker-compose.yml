@@ -10,7 +10,7 @@ services:
       MYSQL_DATABASE: dockerdb
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
     volumes:
-      - mysql_data:/var/lib/mysql
+      - /home/welman/repositories/docker-tools/data/mysql:/var/lib/mysql
     networks:
       dockernet1:
         ipv4_address: 172.20.0.2
@@ -44,11 +44,6 @@ services:
     networks:
       dockernet1:
         ipv4_address: 172.20.0.4
-
-volumes:
-  mysql_data:
-    name: dockerdata
-    driver: local
 
 networks:
   dockernet1:
